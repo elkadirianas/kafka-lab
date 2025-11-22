@@ -1,62 +1,62 @@
-version: "3.8"
-
 services:
-  controller:
-    image: bitnami/kafka:latest
+  kafka-controller:
+    image: confluentinc/cp-kafka:7.5.0
     container_name: kafka-controller
+    hostname: kafka-controller
     environment:
-      - KAFKA_KRAFT_CLUSTER_ID=MY_CLUSTER_ID
-      - KAFKA_CFG_NODE_ID=1
-      - KAFKA_CFG_PROCESS_ROLES=controller
-      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@controller:9093,2@broker1:9093,3@broker2:9093
-      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
-      - KAFKA_CFG_LISTENERS=CONTROLLER://:9093
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka-controller:19092"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT"
+      KAFKA_LISTENERS: "CONTROLLER://:19092"
+      KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
+      KAFKA_METADATA_LOG_DIR: "/var/lib/kafka/data"
+      CLUSTER_ID: "5L6g3nShT-eMCtK--X86sw"
     ports:
-      - "9093:9093"
+      - "19092:19092"
     volumes:
-      - ./data/controller:/bitnami/kafka
-    networks:
-      - kafka-net
+      - controller-data:/var/lib/kafka/data
 
-  broker1:
-    image: bitnami/kafka:latest
+  kafka-broker1:
+    image: confluentinc/cp-kafka:7.5.0
     container_name: kafka-broker1
+    hostname: kafka-broker1
     environment:
-      - KAFKA_KRAFT_CLUSTER_ID=MY_CLUSTER_ID
-      - KAFKA_CFG_NODE_ID=2
-      - KAFKA_CFG_PROCESS_ROLES=broker
-      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@controller:9093,2@broker1:9093,3@broker2:9093
-      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092
-      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://broker1:9092
-    depends_on:
-      - controller
+      KAFKA_NODE_ID: 2
+      KAFKA_PROCESS_ROLES: broker
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka-controller:19092"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT"
+      KAFKA_LISTENERS: "PLAINTEXT://:29092"
+      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka-broker1:29092"
+      KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
+      CLUSTER_ID: "5L6g3nShT-eMCtK--X86sw"
+      KAFKA_LOG_DIRS: "/var/lib/kafka/data"
     ports:
-      - "9092:9092"
+      - "29092:29092"
     volumes:
-      - ./data/broker1:/bitnami/kafka
-    networks:
-      - kafka-net
+      - broker1-data:/var/lib/kafka/data
 
-  broker2:
-    image: bitnami/kafka:latest
+  kafka-broker2:
+    image: confluentinc/cp-kafka:7.5.0
     container_name: kafka-broker2
+    hostname: kafka-broker2
     environment:
-      - KAFKA_KRAFT_CLUSTER_ID=MY_CLUSTER_ID
-      - KAFKA_CFG_NODE_ID=3
-      - KAFKA_CFG_PROCESS_ROLES=broker
-      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@controller:9093,2@broker1:9093,3@broker2:9093
-      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9094
-      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://broker2:9094
-    depends_on:
-      - controller
+      KAFKA_NODE_ID: 3
+      KAFKA_PROCESS_ROLES: broker
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka-controller:19092"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT"
+      KAFKA_LISTENERS: "PLAINTEXT://:39092"
+      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka-broker2:39092"
+      KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
+      CLUSTER_ID: "5L6g3nShT-eMCtK--X86sw"
+      KAFKA_LOG_DIRS: "/var/lib/kafka/data"
     ports:
-      - "9094:9094"
+      - "39092:39092"
     volumes:
-      - ./data/broker2:/bitnami/kafka
-    networks:
-      - kafka-net
+      - broker2-data:/var/lib/kafka/data
 
-networks:
-  kafka-net:
-    driver: bridge
+volumes:
+  controller-data:
+  broker1-data:
+  broker2-data:
 
