@@ -1,0 +1,24 @@
+kafka-topics --create   --topic logs   --bootstrap-server kafka-broker1:9092   --replication-factor 2   --partitions 3
+
+
+kafka-console-producer --topic logs --bootstrap-server kafka-broker1:9092 \
+--property parse.key=true \
+  --property key.separator=:
+
+
+kafka-console-consumer --topic logs --bootstrap-server kafka-broker1:9092 --from-beginning
+
+this cmd to check the offset of writing : 
+
+	kafka-run-class kafka.tools.GetOffsetShell \
+  --broker-list kafka-broker1:9092 \
+  --topic logs \
+  --time -1
+
+
+this cmd to check the offset of reading in a consumer group :
+
+kafka-consumer-groups \
+  --bootstrap-server kafka-broker1:9092 \
+  --describe \
+  --group <your-consumer-group>
