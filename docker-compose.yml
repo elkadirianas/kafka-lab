@@ -27,11 +27,15 @@ services:
       KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka-broker1:9092,EXTERNAL://localhost:29092
       KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 2
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
       KAFKA_LOG_DIRS: /var/lib/kafka/data
     ports:
       - "29092:29092" # External port mapped to the same port inside
     volumes:
       - broker1-data:/var/lib/kafka/data
+      - ./kafka-streams:/streams 
+      - ./kafka-libs:/libs
+
 
   kafka-broker2:
     image: confluentinc/cp-kafka:7.5.0
@@ -47,6 +51,7 @@ services:
       KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka-broker2:9092,EXTERNAL://localhost:39092
       KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 2
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
       KAFKA_LOG_DIRS: /var/lib/kafka/data
     ports:
       - "39092:39092"
